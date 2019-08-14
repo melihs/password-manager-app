@@ -3,7 +3,12 @@ let storage = require("node-persist");
 storage.initSync();
 
 
-function createAcount(account)
+/**
+ *
+ * @param account
+ * @returns {*}
+ */
+function createAccount(account)
 {
     let accounts = storage.getItemSync("accounts");
 
@@ -16,13 +21,32 @@ function createAcount(account)
     return account;
 }
 
-createAcount({
-    name: "facebook",
-    username: "melihsahin24@gmail.com",
-    password: "123456",
-});
-
-function getAcount(acountName)
+/**
+ *
+ * @param accountName
+ * @returns {*}
+ */
+function getAccount(accountName)
 {
+    let accounts = storage.getItemSync("accounts");
+    let matchedAccount;
 
+    accounts.forEach(function(account) {
+            if(account.name == accountName) {
+                matchedAccount = account;
+            }
+    });
+
+    return matchedAccount;
 }
+
+
+// createAccount({
+//     name: "twitter",
+//     username: "test@gmail.com",
+//     password: "123!sfsf",
+// });
+
+let twitterAccount = getAccount("twitter");
+
+console.log(twitterAccount);

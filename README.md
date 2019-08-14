@@ -3,7 +3,7 @@
 > fundemental node.js application 
 
 ## Dependencies in the Project
-- node-persist https://github.com/simonlast/node-persist#readme
+- node-persist https://github.com/simonlast/node-persist
 
 ## Build Setup
 
