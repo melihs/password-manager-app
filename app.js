@@ -2,82 +2,6 @@ const storage = require("node-persist");
 const crypto = require("crypto-js");
 storage.initSync();
 
-const argv = require("yargs")
-    .command('create','cretae new account',function(yargs){
-        yargs.options({
-            name : {
-                demand : true,
-                description : 'Account name!',
-                alias : 'n',
-                type : 'string'
-            },
-            username : {
-                demand : true,
-                description : 'Account owner name!',
-                alias : 'u',
-                type : 'string'
-            },
-            password : {
-                demand : true,
-                description : 'Account password',
-                alias : 'p',
-                type : 'string'
-            },
-            masterPassword : {
-                demand : true,
-                description : 'Your account with masterPassword',
-                alias :  "k",
-                type : "string"
-            }
-        }).help('help');
-    })
-    .command('get','Get Account',function(yargs){
-        yargs.options({
-            name : {
-                demand :true,
-                description : 'Account name',
-                alias : 'n',
-                type : 'string'
-
-            },
-            masterPassword : {
-                demand : true,
-                description : 'Your account with masterPassword',
-                alias :  "k",
-                type : "string"
-            }
-        }).help('help');
-    })
-    .argv;
-let command = argv._[0];
-
-if( command === 'create'
-    && typeof argv.name !== 'undefined' && argv.name.length > 0
-    && typeof argv.username !== 'undefined' && argv.username.length > 0
-    && typeof argv.masterPassword !== 'undefined' && argv.masterPassword.length > 0
-    && typeof argv.password !== 'undefined' && argv.password.length > 0 ) {
-   let createdAccount = createAccount({
-        name : argv.name,
-        username : argv.username,
-        password : argv.password
-    },argv.masterPassword);
-
-   console.log('Account created successfully...');
-
-}else if(command === 'get'
-    && typeof argv.name !== 'undefined' && argv.name.length > 0
-    && typeof argv.masterPassword !== 'undefined' && argv.masterPassword.length > 0 ) {
-    let account = getAccount(argv.name,argv.masterPassword);
-
-    if(typeof account !== 'undefined') {
-        console.log(account);
-    } else {
-        console.log('Opps! not found');
-    }
-} else {
-    console.log('Please enter current command!');
-}
-
 /**
  *
  * @param masterPassword
@@ -143,3 +67,83 @@ function getAccount(accountName,masterPassword)
 
     return matchedAccount;
 }
+
+
+const argv = require("yargs")
+    .command('create','cretae new account',function(yargs){
+        yargs.options({
+            name : {
+                demand : true,
+                description : 'Account name!',
+                alias : 'n',
+                type : 'string'
+            },
+            username : {
+                demand : true,
+                description : 'Account owner name!',
+                alias : 'u',
+                type : 'string'
+            },
+            password : {
+                demand : true,
+                description : 'Account password',
+                alias : 'p',
+                type : 'string'
+            },
+            masterPassword : {
+                demand : true,
+                description : 'Your account with masterPassword',
+                alias :  "k",
+                type : "string"
+            }
+        }).help('help');
+    })
+    .command('get','Get Account',function(yargs){
+        yargs.options({
+            name : {
+                demand :true,
+                description : 'Account name',
+                alias : 'n',
+                type : 'string'
+
+            },
+            masterPassword : {
+                demand : true,
+                description : 'Your account with masterPassword',
+                alias :  "k",
+                type : "string"
+            }
+        }).help('help');
+    })
+    .argv;
+let command = argv._[0];
+
+if( command === 'create' && typeof argv.name !== 'undefined' && argv.name.length > 0 && typeof argv.username !== 'undefined' && argv.username.length > 0 && typeof argv.masterPassword !== 'undefined' && argv.masterPassword.length > 0 && typeof argv.password !== 'undefined' && argv.password.length > 0 ) {
+  try {
+      let createdAccount = createAccount({
+          name : argv.name,
+          username : argv.username,
+          password : argv.password
+      },argv.masterPassword);
+
+      console.log('Account created successfully...');
+  } catch(e) {
+      console.log("Account new create failed!!!");
+  }
+
+}else if(command === 'get' && typeof argv.name !== 'undefined' && argv.name.length > 0 && typeof argv.masterPassword !== 'undefined' && argv.masterPassword.length > 0 ) {
+    try {
+        let account = getAccount(argv.name,argv.masterPassword);
+
+        if(typeof account !== 'undefined') {
+            console.log(account);
+        } else {
+            console.log('Opps! not found');
+        }
+    } catch(e) {
+        console.log('Account get failed!!!');
+    }
+} else {
+    console.log('Please enter current command!');
+}
+
