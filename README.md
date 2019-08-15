@@ -7,6 +7,7 @@
 ## Dependencies in the Project
 - node-persist https://github.com/simonlast/node-persist
 - yargs https://github.com/yargs/yargs
+- crypto-js https://github.com/brix/crypto-js
 
 ## Build Setup
 
@@ -20,11 +21,11 @@ Commands
 
 ##### Create new account
 ```
- node app.js create -n <account-name> -u <user-name> -p <password>
+ node app.js create -n <account-name> -u <user-name> -p <password> -k <masterPassword>
 ```
 ##### Get account
 ```
- node app.js get -n <account-name>
+ node app.js get -n <account-name> -k <masterPassword>
 ```
 
 ##### Aliases
@@ -34,5 +35,6 @@ Commands
  -n : "account name"
  -u : "username"
  -p : "password"
+ -k : "master password" for encrpty your data
 ```
 

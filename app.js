@@ -1,4 +1,5 @@
 const storage = require("node-persist");
+const crypto = require("crypto-js");
 storage.initSync();
 
 const argv = require("yargs")
@@ -21,6 +22,12 @@ const argv = require("yargs")
                 description : 'Account password',
                 alias : 'p',
                 type : 'string'
+            },
+            masterPassword : {
+                demand : true,
+                description : 'Your account with masterPassword',
+                alias :  "k",
+                type : "string"
             }
         }).help('help');
     })
@@ -32,6 +39,12 @@ const argv = require("yargs")
                 alias : 'n',
                 type : 'string'
 
+            },
+            masterPassword : {
+                demand : true,
+                description : 'Your account with masterPassword',
+                alias :  "k",
+                type : "string"
             }
         }).help('help');
     })
@@ -41,18 +54,20 @@ let command = argv._[0];
 if( command === 'create'
     && typeof argv.name !== 'undefined' && argv.name.length > 0
     && typeof argv.username !== 'undefined' && argv.username.length > 0
+    && typeof argv.masterPassword !== 'undefined' && argv.masterPassword.length > 0
     && typeof argv.password !== 'undefined' && argv.password.length > 0 ) {
-
    let createdAccount = createAccount({
         name : argv.name,
         username : argv.username,
-        password : argv.password,
-    });
+        password : argv.password
+    },argv.masterPassword);
 
    console.log('Account created successfully...');
 
-}else if(command === 'get' && typeof argv.name !== 'undefined' && argv.name.length > 0) {
-    let account = getAccount(argv.name);
+}else if(command === 'get'
+    && typeof argv.name !== 'undefined' && argv.name.length > 0
+    && typeof argv.masterPassword !== 'undefined' && argv.masterPassword.length > 0 ) {
+    let account = getAccount(argv.name,argv.masterPassword);
 
     if(typeof account !== 'undefined') {
         console.log(account);
@@ -63,21 +78,48 @@ if( command === 'create'
     console.log('Please enter current command!');
 }
 
+/**
+ *
+ * @param masterPassword
+ * @returns {[]}
+ */
+function getAccounts(masterPassword)
+{
+    let encryptedAccounts = storage.getItemSync("accounts");
+    let accounts = [];
+
+    if(typeof encryptedAccounts !== 'undefined') {
+        let bytes = crypto.AES.decrypt(encryptedAccounts,masterPassword);
+        accounts = JSON.parse(bytes.toString(crypto.enc.Utf8));
+    }
+
+    return accounts;
+}
+
+/**
+ *
+ * @param masterPassword
+ * @returns {*}
+ */
+function saveAccounts(accounts,masterPassword)
+{
+    let encryptedAccounts = crypto.AES.encrypt(JSON.stringify(accounts),masterPassword);
+    storage.setItemSync("accounts",encryptedAccounts.toString());
+
+    return accounts
+}
+
 
 /**
  *
  * @param account
  * @returns {*}
  */
-function createAccount(account)
+function createAccount(account,masterPassword)
 {
-    let accounts = storage.getItemSync("accounts");
-
-    if(typeof accounts === "undefined") {
-        accounts = [];
-    }
+    let accounts = getAccounts(masterPassword);
     accounts.push(account);
-    storage.setItemSync("accounts",accounts);
+    saveAccounts(accounts,masterPassword);
 
     return account;
 }
@@ -87,9 +129,10 @@ function createAccount(account)
  * @param accountName
  * @returns {*}
  */
-function getAccount(accountName)
+function getAccount(accountName,masterPassword)
 {
-    let accounts = storage.getItemSync("accounts");
+    let accounts = getAccounts(masterPassword);
+
     let matchedAccount;
 
     accounts.forEach(function(account) {
