@@ -1,6 +1,7 @@
 # Account-manager-app
 
 > fundemental console-based node.js application
+
 ![console-based node.js application](nodejs-app.gif)
 
 ## Dependencies in the Project
@@ -17,16 +18,16 @@ npm install
 # Usage
 Commands 
 
-#####Create new account
+##### Create new account
 ```
  node app.js create -n <account-name> -u <user-name> -p <password>
 ```
-#####Get account
+##### Get account
 ```
  node app.js get -n <account-name>
 ```
 
-#####Aliases
+##### Aliases
 ```
  create : "Cretae new account" command
  get    : "Get Account" command
